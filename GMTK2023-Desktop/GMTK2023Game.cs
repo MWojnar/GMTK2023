@@ -1,15 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace GMTK2023_Desktop
 {
-    public class Game1 : Game
+    public class GMTK2023Game : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        public AssetManager _assetManager;
+        private List<Entity> entities;
 
-        public Game1()
+        public GMTK2023Game()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -18,7 +22,7 @@ namespace GMTK2023_Desktop
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            entities = new List<Entity>();
 
             base.Initialize();
         }
@@ -26,8 +30,10 @@ namespace GMTK2023_Desktop
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _assetManager = new AssetManager(Content);
+            _assetManager.Load();
 
-            // TODO: use this.Content to load your game content here
+            entities.Add(new TestPlayer(this, new Vector2(20, 20)));
         }
 
         protected override void Update(GameTime gameTime)
@@ -35,7 +41,8 @@ namespace GMTK2023_Desktop
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            foreach (Entity entity in entities)
+                entity.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -44,7 +51,12 @@ namespace GMTK2023_Desktop
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+
+            foreach (Entity entity in entities)
+                entity.Draw(_spriteBatch, gameTime);
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
