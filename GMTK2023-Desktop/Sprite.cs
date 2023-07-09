@@ -14,8 +14,12 @@ namespace GMTK2023_Desktop
         private int frameWidth;
         private int frameHeight;
         private float animationRate;
+		public int FrameWidth { get { return frameWidth; } }
+		public int FrameHeight { get { return frameHeight; } }
+		public int Width { get { return texture.Width; } }
+		public int Height { get { return texture.Height; } }
 
-        public Sprite(Texture2D texture)
+		public Sprite(Texture2D texture)
         {
             this.texture = texture;
             this.frameWidth = texture.Width;
@@ -23,17 +27,15 @@ namespace GMTK2023_Desktop
             this.animationRate = 60;
         }
 
-        public Sprite(Texture2D texture, int frameWidth, int frameHeight, float animationRate)
+        public Sprite(Texture2D texture, int frames, float animationRate)
         {
             this.texture = texture;
-            this.frameWidth = frameWidth;
-            this.frameHeight = frameHeight;
+            this.frameWidth = texture.Width / frames;
+            this.frameHeight = texture.Height;
             this.animationRate = animationRate;
         }
 
-        public int FrameWidth { get { return frameWidth; } }
-        public int FrameHeight { get { return frameHeight; } }
-        public float AnimationRate { get { return animationRate; } }
+		public float AnimationRate { get { return animationRate; } }
 
         public Rectangle GetFrameRect(int frame)
         {
@@ -41,19 +43,22 @@ namespace GMTK2023_Desktop
             return new Rectangle(frameX, 0, frameWidth, frameHeight);
         }
 
-        public int GetCurrentFrame(GameTime gameTime)
+        private Vector2 zero = new Vector2();
+
+        public void Draw(int frame, SpriteBatch spriteBatch, Vector2 position, Color? color = null, SpriteEffects effects = SpriteEffects.None)
         {
-            float animationStartTime = (float)gameTime.TotalGameTime.TotalSeconds;
-            float animationInterval = 1 / animationRate;
-            float timeSinceStart = (float)gameTime.TotalGameTime.TotalSeconds - animationStartTime;
-            return (int)(timeSinceStart / animationInterval) % (texture.Width / frameWidth);
+            var sourceRect = GetFrameRect(frame);
+            spriteBatch.Draw(Texture, position, sourceRect, color.HasValue ? color.Value : Color.White, 0, zero, 1, effects, 0);
         }
 
-        internal void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position)
+		public void Draw(Rectangle sourceRect, SpriteBatch spriteBatch, Vector2 position, Color? color = null, SpriteEffects effects = SpriteEffects.None)
+		{
+			spriteBatch.Draw(Texture, position, sourceRect, color.HasValue ? color.Value : Color.White, 0, zero, 1, effects, 0);
+		}
+
+        internal int GetFrames()
         {
-            int currentFrame = GetCurrentFrame(gameTime);
-            var sourceRect = GetFrameRect(currentFrame);
-            spriteBatch.Draw(Texture, position, sourceRect, Color.White);
+            return texture.Width / frameWidth;
         }
 
         public Texture2D Texture { get { return texture; } }

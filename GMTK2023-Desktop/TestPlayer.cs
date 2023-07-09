@@ -9,11 +9,11 @@ namespace GMTK2023_Desktop
 {
     public class TestPlayer : Entity
     {
-        public TestPlayer(GMTK2023Game game, Vector2 position) : base(game, position, game._assetManager.GetSprite("test"))
+        public TestPlayer(GMTK2023Game game, Vector2 position, GameTime gameTime) : base(game, position, game.AssetManager.GetSprite("SpriteFastInvader"), gameTime)
         {
         }
 
-        public TestPlayer(GMTK2023Game game, Vector2 position, Sprite sprite) : base(game, position, sprite)
+        public TestPlayer(GMTK2023Game game, Vector2 position, Sprite sprite, GameTime gameTime) : base(game, position, sprite, gameTime)
         {
         }
     }
