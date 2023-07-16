@@ -15,6 +15,7 @@ namespace GMTK2023_Desktop
         private Dictionary<string, Sprite> sprites;
         private Dictionary<string, Song> music;
         private Dictionary<string, SoundEffect> sounds;
+		private Dictionary<string, SpriteFont> fonts;
         private ContentManager contentManager;
 
         public AssetManager(ContentManager content)
@@ -22,6 +23,7 @@ namespace GMTK2023_Desktop
             sprites = new Dictionary<string, Sprite>();
 			music = new Dictionary<string, Song>();
 			sounds = new Dictionary<string, SoundEffect>();
+			fonts = new Dictionary<string, SpriteFont>();
             contentManager = content;
         }
 
@@ -58,6 +60,17 @@ namespace GMTK2023_Desktop
 			return sound;
 		}
 
+		public SpriteFont GetFont(string assetName)
+		{
+			if (!fonts.TryGetValue(assetName, out var font))
+			{
+				font = contentManager.Load<SpriteFont>(assetName);
+				fonts.Add(assetName, font);
+			}
+
+			return font;
+		}
+
 		public void Load()
         {
             sprites.Clear();
@@ -83,6 +96,16 @@ namespace GMTK2023_Desktop
 			sprites.Add("SpriteBarrierInvaderDeathSaucer", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_barrier_invader_saucer_strip3"), 3, 10));
 			sprites.Add("SpriteEnemySpawn", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_enemy_spawn_strip5"), 5, 10));
 			sprites.Add("SpriteEnemyDeath", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_enemy_death_strip5"), 5, 10));
+			sprites.Add("SpriteKamikazeInvader", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_bomb_invader_strip4"), 4, 10));
+			sprites.Add("SpriteKamikazeInvaderL", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_bomb_invader_moveL_strip4"), 4, 10));
+			sprites.Add("SpriteKamikazeInvaderR", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_bomb_invader_moveR_strip4"), 4, 10));
+			sprites.Add("SpriteKamikazeInvaderDeath", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_bomb_invader_death_strip4"), 4, 10));
+			sprites.Add("SpriteBomb", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_bomb"), 1, 10));
+			sprites.Add("SpriteBombExplode", new Sprite(contentManager.Load<Texture2D>("Sprites/spr_bomb_explode_strip5"), 5, 10));
+
+			sprites.Add("BackgroundMain", new Sprite(contentManager.Load<Texture2D>("Backgrounds/game_bg"), 1, 10));
+			sprites.Add("BackgroundTitle", new Sprite(contentManager.Load<Texture2D>("Backgrounds/game_title"), 1, 10));
+			sprites.Add("BackgroundGameOver", new Sprite(contentManager.Load<Texture2D>("Backgrounds/game_over"), 1, 10));
 
 			music.Clear();
 			music.Add("MusicMain", contentManager.Load<Song>("Music/msc_Invasion_final_mix"));
@@ -94,6 +117,11 @@ namespace GMTK2023_Desktop
 			sounds.Add("SoundEnemyShoot", contentManager.Load<SoundEffect>("Sounds/snd_enemy_shot"));
 			sounds.Add("SoundInvaderDeath", contentManager.Load<SoundEffect>("Sounds/snd_invader_death"));
 			sounds.Add("SoundInvaderShoot", contentManager.Load<SoundEffect>("Sounds/snd_invader_shot"));
+
+			fonts.Add("FontDogica", contentManager.Load<SpriteFont>("Fonts/dogica"));
+			fonts.Add("FontDogicaBold", contentManager.Load<SpriteFont>("Fonts/dogicabold"));
+			fonts.Add("FontDogicaPixel", contentManager.Load<SpriteFont>("Fonts/dogicapixel"));
+			fonts.Add("FontDogicaPixelBold", contentManager.Load<SpriteFont>("Fonts/dogicapixelbold"));
 		}
     }
 }

@@ -13,6 +13,7 @@ namespace GMTK2023_Desktop
         protected GMTK2023Game game;
 		private float depth;
         protected Sprite baseSprite;
+        public Sprite BaseSprite { get { return baseSprite; } }
         protected bool isFlipped;
 
 		public float Depth
@@ -33,15 +34,13 @@ namespace GMTK2023_Desktop
             baseSprite = sprite;
             isFlipped = false;
             if (sprite != null)
-            {
                 SetAnimation(new Animation(sprite, gameTime));
-                this.sourceRect = sprite.GetFrameRect(0);
-            }
         }
 
         public void SetAnimation(Animation animation)
         {
             this.animation = animation;
+            this.sourceRect = animation.Sprite.GetFrameRect(0);
         }
 
         public virtual void Draw(ExtendedSpriteBatch spriteBatch, GameTime gameTime)
@@ -55,15 +54,25 @@ namespace GMTK2023_Desktop
             //TODO
         }
 
-        public bool IsMouseOver()
+        public virtual bool IsMouseOver()
         {
             return IsPointColliding(game.MousePos);
+        }
+
+        public virtual bool IsMouseOver(Rectangle rect)
+        {
+            return IsPointColliding(game.MousePos, rect);
         }
 
         public bool IsPointColliding(Vector2 point)
         {
             return (sourceRect?.Contains(point.X - position.X, point.Y - position.Y)??false);
         }
+
+        public bool IsPointColliding(Vector2 point, Rectangle rect)
+        {
+			return (rect.Contains(point.X - position.X, point.Y - position.Y));
+		}
 
         public Vector2 GetPos()
         {

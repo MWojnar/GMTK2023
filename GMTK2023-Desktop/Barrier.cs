@@ -18,7 +18,7 @@ namespace GMTK2023_Desktop
 
 		public Barrier(GMTK2023Game game, Vector2 position, GameTime gameTime, float depth = 0) : base(game, position, game.AssetManager.GetSprite("SpriteBarrier"), gameTime, depth)
 		{
-			size = 4;
+			size = game.Settings.BarrierBlockSize;
 			dim = baseSprite.Width / size;
 			damaged = new bool[dim, dim];
 			drawRects = new Rectangle[dim,dim];
@@ -63,6 +63,7 @@ namespace GMTK2023_Desktop
 				return false;
 			damaged[maxX, maxY] = true;
 			game.AssetManager.GetSound("SoundBarrierDamage").Play();
+			game.AddPoints(game.Settings.PointsFromBarrierHit);
 			return true;
 		}
 
@@ -100,6 +101,28 @@ namespace GMTK2023_Desktop
 			foreach (Entity entity in game.Entities.Where(e => e is InvaderShot))
 				if (IsCollidingWithEntity(entity))
 					entity.Remove();
+		}
+
+		public void DestroyWithinRadius(Vector2 pos, double radius)
+		{
+			for (int x = 0; x < dim; x++)
+				for (int y = 0; y < dim; y++)
+					if (!damaged[x, y])
+						damaged[x, y] = pointsWithinCircle(drawRects[x, y].OffsetBy(GetPos()), pos, radius);
+		}
+
+		private bool pointWithinCircle(Vector2 point, Vector2 center, double radius)
+		{
+			return (Math.Sqrt(Math.Pow(point.X - center.X, 2) + Math.Pow(point.Y - center.Y, 2)) <= radius);
+		}
+
+		private bool pointsWithinCircle(Rectangle rect, Vector2 center, double radius)
+		{
+			bool point1Within = pointWithinCircle(new Vector2(rect.X, rect.Y), center, radius);
+			bool point2Within = pointWithinCircle(new Vector2(rect.X + rect.Width, rect.Y), center, radius);
+			bool point3Within = pointWithinCircle(new Vector2(rect.X, rect.Y + rect.Height), center, radius);
+			bool point4Within = pointWithinCircle(new Vector2(rect.X + rect.Width, rect.Y + rect.Height), center, radius);
+			return point1Within || point2Within || point3Within || point4Within;
 		}
 	}
 }

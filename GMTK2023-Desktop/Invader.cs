@@ -16,11 +16,12 @@ namespace GMTK2023_Desktop
         protected int width, height;
         protected Fleet fleet;
         protected Sprite leftMoveSprite;
+        protected Sprite rightMoveSprite;
         protected Sprite deathSprite;
         protected double lastShot;
         protected double shootInterval;
 
-        public Invader(GMTK2023Game game, Vector2 position, Sprite sprite, Sprite leftMoveSprite, Sprite deathSprite, GameTime gameTime, Fleet fleet, float movementSpeed = 4, int health = 1, int width = 1, int height = 1, double shootInterval = 3.0f) : base(game, position, sprite, gameTime)
+        public Invader(GMTK2023Game game, Vector2 position, Sprite sprite, Sprite leftMoveSprite, Sprite deathSprite, GameTime gameTime, Fleet fleet, float movementSpeed = 4, int health = 1, int width = 1, int height = 1, double shootInterval = 3.0f, Sprite rightMoveSprite = null) : base(game, position, sprite, gameTime)
         {
             this.movementSpeed = movementSpeed;
 			this.health = health;
@@ -28,6 +29,7 @@ namespace GMTK2023_Desktop
 			this.height = height;
             this.fleet = fleet;
             this.leftMoveSprite = leftMoveSprite;
+            this.rightMoveSprite = rightMoveSprite;
             this.deathSprite = deathSprite;
             lastShot = gameTime.TotalGameTime.TotalSeconds;
             this.shootInterval = shootInterval;
@@ -73,10 +75,16 @@ namespace GMTK2023_Desktop
             {
                 SetPos(GetPos().X + movementSpeed, GetPos().Y);
                 wrapAround();
-                if (animation.Sprite != leftMoveSprite || !isFlipped)
+                if (rightMoveSprite == null) {
+                    if (animation.Sprite != leftMoveSprite || !isFlipped)
+                    {
+                        SetAnimation(new Animation(leftMoveSprite, gameTime));
+                        isFlipped = true;
+                    }
+                } else if (animation.Sprite != rightMoveSprite)
                 {
-                    SetAnimation(new Animation(leftMoveSprite, gameTime));
-                    isFlipped = true;
+                    SetAnimation(new Animation(rightMoveSprite, gameTime));
+                    isFlipped = false;
                 }
             }
 		}

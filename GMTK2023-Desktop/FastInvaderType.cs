@@ -9,7 +9,7 @@ namespace GMTK2023_Desktop
 {
 	internal class FastInvaderType : InvaderType
 	{
-		public FastInvaderType(GMTK2023Game game) : base(game.AssetManager.GetSprite("SpriteFastInvader"), 15, typeof(FastInvader))
+		public FastInvaderType(GMTK2023Game game) : base(game.AssetManager.GetSprite("SpriteFastInvader"), game.Settings.FastInvaderPrice, typeof(FastInvader))
 		{
 		}
 	}

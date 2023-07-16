@@ -9,10 +9,11 @@ namespace GMTK2023_Desktop
 {
 	public class InvaderShot : Entity
 	{
-		private float speed = 4;
+		private float speed;
 
 		public InvaderShot(GMTK2023Game game, Vector2 position, GameTime gameTime, float depth = -1) : base(game, position, game.AssetManager.GetSprite("SpriteInvaderShot"), gameTime, depth)
 		{
+			speed = (float)game.Settings.InvaderShotSpeed;
 		}
 
 		public override void Update(GameTime gameTime)
@@ -25,13 +26,14 @@ namespace GMTK2023_Desktop
 					if (((Barrier)entity).Hit(this))
 					{
 						game.RemoveEntity(this);
-						game.AddPoints(5);
+						return;
 					}
 			foreach (Entity entity in game.Entities.Where(e => e is Enemy))
 				if (IsCollidingWithEntity(entity))
 				{
 					game.RemoveEntity(this);
 					((Enemy)entity).Hit(gameTime);
+					return;
 				}
 			base.Update(gameTime);
 		}

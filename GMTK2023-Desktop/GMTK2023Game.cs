@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace GMTK2023_Desktop
@@ -22,9 +24,11 @@ namespace GMTK2023_Desktop
         private Vector2 mousePos;
         private int points;
         private GameTime gameTime;
+        private Settings settings;
 
         public int Points { get { return points; } }
         public GameTime GameTime { get { return gameTime; } }
+        public Settings Settings { get { return settings; } }
 
 		public List<KeyValuePair<Vector2, InvaderType>> SavedFleet;
 
@@ -47,7 +51,12 @@ namespace GMTK2023_Desktop
             mousePos = new Vector2();
             entitiesToAdd = new List<Entity>();
             entitiesToRemove = new List<Entity>();
-        }
+			using (var sr = new StreamReader("settings.json"))
+			{
+				string settingsData = sr.ReadToEnd();
+				settings = JsonConvert.DeserializeObject<Settings>(settingsData);
+			}
+		}
 
         protected override void Initialize()
         {
@@ -69,8 +78,9 @@ namespace GMTK2023_Desktop
             AssetManager = new AssetManager(Content);
             AssetManager.Load();
 			MediaPlayer.Play(AssetManager.GetMusic("MusicMain"));
+            MediaPlayer.IsRepeating = true;
 
-			StartRoom(1, new GameTime());
+			StartRoom(0, new GameTime());
 		}
 
         public void StartRoom(int room, GameTime gameTime)
@@ -80,7 +90,8 @@ namespace GMTK2023_Desktop
 				CreateEntity(new Entity(this, new Vector2(x, 352), AssetManager.GetSprite("SpriteGround"), gameTime));
 			if (room == 0)
             {
-
+                CreateEntity(new Entity(this, new Vector2(), AssetManager.GetSprite("BackgroundTitle"), gameTime));
+                CreateEntity(new TitleScreen(this, new Vector2(), gameTime));
             } else if (room == 1)
             {
 				CreateEntity(new FleetCreator(this, new Vector2(16, 32), gameTime));
@@ -91,6 +102,10 @@ namespace GMTK2023_Desktop
 					CreateEntity(new Barrier(this, new Vector2(i, 288), gameTime));
                 CreateEntity(new FleetingEntity(this, new Vector2(128 - 8 - 16, 336 - 16), AssetManager.GetSprite("SpriteEnemySpawn"), gameTime, () => CreateEntity(new Enemy(this, new Vector2(128 - 8, 336), this.gameTime))));
                 points = 0;
+			} else if (room == 3)
+            {
+				CreateEntity(new Entity(this, new Vector2(), AssetManager.GetSprite("BackgroundGameOver"), gameTime));
+				CreateEntity(new GameOver(this, new Vector2(), gameTime));
 			}
         }
 
@@ -148,6 +163,8 @@ namespace GMTK2023_Desktop
             GraphicsDevice.Clear(Color.Black);
 
 			_spriteBatch.Begin(SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, transformMatrix: viewMatrix);
+
+            AssetManager.GetSprite("BackgroundMain").Draw(0, _spriteBatch, new Vector2());
 
 			foreach (Entity entity in entities)
                 entity.Draw(_spriteBatch, gameTime);

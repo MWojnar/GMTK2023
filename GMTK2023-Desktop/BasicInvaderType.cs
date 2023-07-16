@@ -9,7 +9,7 @@ namespace GMTK2023_Desktop
 {
 	internal class BasicInvaderType : InvaderType
 	{
-		public BasicInvaderType(GMTK2023Game game) : base(game.AssetManager.GetSprite("SpriteBasicInvader"), 5, typeof(BasicInvader))
+		public BasicInvaderType(GMTK2023Game game) : base(game.AssetManager.GetSprite("SpriteBasicInvader"), game.Settings.BasicInvaderPrice, typeof(BasicInvader))
 		{
 		}
 	}

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace GMTK2023_Desktop
     public class Fleet : Entity
     {
         private List<Invader> invaders;
+		private SpriteFont font;
 
         public Fleet(GMTK2023Game game, Vector2 position, GameTime gameTime, List<KeyValuePair<Vector2, InvaderType>> fleetData = null) : base(game, position, null, gameTime)
         {
@@ -54,6 +56,7 @@ namespace GMTK2023_Desktop
 					invaders.Add((Invader)Activator.CreateInstance(invaderData.Value.EntityClass, new object[] { game, invaderData.Key, gameTime, this }));
             foreach (Invader invader in invaders)
                 game.CreateEntity(invader);
+			font = game.AssetManager.GetFont("FontDogicaPixel");
         }
 
 		public override void Update(GameTime gameTime)
@@ -70,6 +73,13 @@ namespace GMTK2023_Desktop
 				foreach (Invader invader in invaders)
 					invader.NotMoving(gameTime);
 			base.Update(gameTime);
+		}
+
+		Vector2 scoreTextPos = new Vector2();
+
+		public override void Draw(ExtendedSpriteBatch spriteBatch, GameTime gameTime)
+		{
+			spriteBatch.DrawString(font, $"Score: {game.Points}", scoreTextPos, Color.White);
 		}
 
 		public void Remove(Invader invader)

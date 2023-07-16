@@ -24,6 +24,7 @@ namespace GMTK2023_Desktop
 				if (IsCollidingWithEntity(entity)) {
 					((Invader)entity).Hit(gameTime);
 					game.RemoveEntity(this);
+					break;
 				}
 			base.Update(gameTime);
 		}

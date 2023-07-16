@@ -9,7 +9,7 @@ namespace GMTK2023_Desktop
 {
     public class BasicInvader : Invader
     {
-        public BasicInvader(GMTK2023Game game, Vector2 position, GameTime gameTime, Fleet fleet) : base(game, position, game.AssetManager.GetSprite("SpriteBasicInvader"), game.AssetManager.GetSprite("SpriteBasicInvaderL"), game.AssetManager.GetSprite("SpriteBasicInvaderDeath"), gameTime, fleet)
+        public BasicInvader(GMTK2023Game game, Vector2 position, GameTime gameTime, Fleet fleet) : base(game, position, game.AssetManager.GetSprite("SpriteBasicInvader"), game.AssetManager.GetSprite("SpriteBasicInvaderL"), game.AssetManager.GetSprite("SpriteBasicInvaderDeath"), gameTime, fleet, (float)game.Settings.BasicInvaderSpeed, 1, 1, 1, game.Settings.BasicInvaderShotInterval)
         {
         }
     }

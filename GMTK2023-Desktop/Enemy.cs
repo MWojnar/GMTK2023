@@ -16,8 +16,11 @@ namespace GMTK2023_Desktop
 		private double speed;
 		private double shootSpeed;
 		private double nextShot;
+		private double spawnTime;
+		private double invincibilityLength;
 		private Barrier hideBarrier;
 		private int? movePointX;
+		private int health;
 		private bool dead;
 
 		private enum Strategy
@@ -30,11 +33,14 @@ namespace GMTK2023_Desktop
 		{
 			leftSprite = game.AssetManager.GetSprite("SpriteEnemyL");
 			strategy = Strategy.Hide;
-			speed = 2;
-			shootSpeed = 1;
+			speed = game.Settings.EnemyMoveSpeed;
+			shootSpeed = game.Settings.EnemyShotInterval;
 			nextShot = gameTime.TotalGameTime.TotalSeconds + shootSpeed;
-			standardStratLength = 3;
+			standardStratLength = game.Settings.EnemyStrategyInterval;
 			stratTimeout = gameTime.TotalGameTime.TotalSeconds + standardStratLength;
+			invincibilityLength = game.Settings.EnemyInvincibilityTimer;
+			spawnTime = gameTime.TotalGameTime.TotalSeconds;
+			health = game.Settings.EnemyHealth;
 			movePointX = null;
 			dead = false;
 			respawnBarriers();
@@ -105,6 +111,17 @@ namespace GMTK2023_Desktop
 			base.Update(gameTime);
 		}
 
+		public override void Draw(ExtendedSpriteBatch spriteBatch, GameTime gameTime)
+		{
+			if (!isInvincible(gameTime) || (gameTime.TotalGameTime.TotalSeconds - spawnTime) % .25 < .125)
+			base.Draw(spriteBatch, gameTime);
+		}
+
+		private bool isInvincible(GameTime gameTime)
+		{
+			return (gameTime.TotalGameTime.TotalSeconds - spawnTime) < invincibilityLength;
+		}
+
 		private void shoot(GameTime gameTime)
 		{
 			game.CreateEntity(new EnemyShot(game, new Vector2(GetPos().X + (baseSprite.FrameWidth / 2) - 8, GetPos().Y), gameTime));
@@ -135,7 +152,11 @@ namespace GMTK2023_Desktop
 
 		public void Hit(GameTime gameTime)
 		{
-			die(gameTime);
+			health--;
+			if (health <= 0)
+				die(gameTime);
+			else
+				spawnTime = gameTime.TotalGameTime.TotalSeconds;
 		}
 
 		private void die(GameTime gameTime)
@@ -146,6 +167,7 @@ namespace GMTK2023_Desktop
 				game.CreateEntity(new FleetingEntity(game, new Vector2(GetPos().X - 16, GetPos().Y - 16), game.AssetManager.GetSprite("SpriteEnemyDeath"), gameTime, () => game.CreateEntity(new FleetingEntity(game, new Vector2(128 - 8 - 16, 336 - 16), game.AssetManager.GetSprite("SpriteEnemySpawn"), gameTime, () => game.CreateEntity(new Enemy(game, new Vector2(128 - 8, 336), game.GameTime))))));
 				dead = true;
 				game.AssetManager.GetSound("SoundEnemyDeath").Play();
+				game.AddPoints(game.Settings.PointsFromEnemyKill);
 			}
 		}
 	}
